@@ -61,8 +61,8 @@ jobs:
           # pending aggregation of multi modules report into a single html file
           command: |
             mkdir -p ~/test-results/junit/
-            find ./build/test-results/test/ -type f -name "*.xml" -exec cp -r {} ~/test-results/junit/ \;
-            cp build/reports/tests/test/* ~/test-results/junit/
+            find ./build/test-results/test/ -type f -name "*.xml" -exec cp {} ~/test-results/junit/ \;
+            cp -r build/reports/tests/test/* ~/test-results/junit/
           when: always
       - store_test_results:
           path: ~/test-results
