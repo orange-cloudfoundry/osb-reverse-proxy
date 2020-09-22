@@ -10,8 +10,13 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# Exclude intellij files
+*.iml
+*.ipr
+*.iws
+
 # Package Files #
-*.jar
+#*.jar # keep gradle.jar
 *.war
 *.nar
 *.ear

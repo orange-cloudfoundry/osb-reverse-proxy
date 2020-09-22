@@ -1,2 +1,5 @@
+
 # osb-reverse-proxy
-A reverse proxy for open service broker endpoints
+
+A reverse http proxy tailored for open service broker (OSB) api endpoints
+
