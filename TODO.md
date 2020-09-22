@@ -17,12 +17,12 @@ Related issue: https://github.com/orange-cloudfoundry/paas-templates/issues/847
 dev -> OSB client PF -> osb-cmdb -> master-depls/cf -> RP -> 3rd party broker on intranet/internet
 ```
 * [x] bump dependencies to latest
+* [ ] Set up circle ci and release publication to github 
 
 * [ ] set up http proxy in SCG
    * [ ] look up documentation & google it
       * https://github.com/spring-cloud/spring-cloud-gateway/issues/176#issuecomment-554674253
       
-* [ ] Set up circle ci and release publication to github 
 * [ ] Initiate paas-template deployment: ops-depls
    * internal-controlplane-cf.paas domain https://miro.com/app/board/o9J_krEBr-4=/
    * org internal
