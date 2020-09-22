@@ -1,4 +1,4 @@
-package gateway;
+package com.orange.oss.osbreverseproxy;
 
 
 import org.slf4j.Logger;

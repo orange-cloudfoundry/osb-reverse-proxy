@@ -17,7 +17,11 @@ Related issue: https://github.com/orange-cloudfoundry/paas-templates/issues/847
 dev -> OSB client PF -> osb-cmdb -> master-depls/cf -> RP -> 3rd party broker on intranet/internet
 ```
 * [x] bump dependencies to latest
-* [ ] Set up circle ci and release publication to github 
+* [x] Set up circle ci, with unit test and saving test results 
+* [ ] Set up and test release publication to github 
+
+* [ ] Set up configuration of the reverse proxy through environment variables 
+   * 
 
 * [ ] set up http proxy in SCG
    * [ ] look up documentation & google it

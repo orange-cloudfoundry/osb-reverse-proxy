@@ -25,6 +25,11 @@ spring:
         ssl:
           useInsecureTrustManager: true
 
+         # Instruct http client to use an outgoing http proxy
+         # See https://github.com/spring-cloud/spring-cloud-gateway/issues/176#issuecomment-554674253
+        proxy:
+          host: ${osbreverseproxy.http_proxy.host}
+          port: ${osbreverseproxy.http_proxy.port}
 # https://cloud.spring.io/spring-cloud-gateway/reference/html/#tls-and-ssl
 #server:
 #  ssl:
@@ -34,40 +39,6 @@ spring:
 #    key-store: classpath:scg-keystore.p12
 #    key-store-type: PKCS12
 
-  security:
-    oauth2:
-      client:
-        registration:
-          gateway:
-            provider: uaa
-            client-id: osbcmdb-proxy0
-            client-secret: Hibor0gocguj
-            authorization-grant-type: authorization_code
-#            redirect-uri: "http://localhost:8080/login/oauth2/code/gateway"
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-#            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
-            # See https://docs.cloudfoundry.org/services/dashboard-sso.html
-            scope: openid,cloud_controller_service_permissions.read
-        provider:
-          uaa:
-            authorization-uri: https://uaa.readacted-domain.com/oauth/authorize
-            token-uri: https://uaa.readacted-domain.com/oauth/token
-            user-info-uri: https://uaa.readacted-domain.com/userinfo
-            user-name-attribute: sub
-            jwk-set-uri: https://uaa.readacted-domain.com/token_keys
-
-# uaac client add osbcmdb-proxy0 --scope 'openid,cloud_controller_service_permissions.read' -s 'Hibor0gocguj' --authorized_grant_types 'authorization_code,refresh_token' --redirect_uri 'https://osbcmdbproxy0.readacted-domain.com/' --authorities 'uaa.resource'
-  #  scope: cloud_controller_service_permissions.read openid
-  #  client_id: osbcmdb-proxy0
-  #  resource_ids: none
-  #  authorized_grant_types: refresh_token authorization_code
-  #  redirect_uri: https://osbcmdbproxy0.readacted-domain.com/
-  #  autoapprove:
-  #  authorities: uaa.resource
-  #  name: osbcmdb-proxy0
-  #  required_user_groups:
-  #  lastmodified: 1596558778404
-  #  id: osbcmdb-proxy0
 
 logging:
   level:
