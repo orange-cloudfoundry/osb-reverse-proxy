@@ -53,6 +53,22 @@ jobs:
           # Note: we exclude AT from circle using junit tags to be flexible on unit tests selection.
           command: |
             ./gradlew --continue  check
+      # uploads the test metadata from the `target/surefire-reports` directory so that it can show up in the CircleCI dashboard.
+      # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+      # See https://circleci.com/docs/2.0/collect-test-data/#maven-surefire-plugin-for-java-junit-results
+      - run:
+          name: Save test results
+          # pending aggregation of multi modules report into a single html file
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex "build/test-results/test/*.xml" -exec cp {} ~/test-results/junit/ \;
+            cp build/reports/tests/test/* ~/test-results/junit/
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
+
   build_n_deploy:
     working_directory: ~/osb-reverse-proxy
     docker:
