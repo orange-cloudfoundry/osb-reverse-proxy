@@ -38,11 +38,10 @@ Selecting A) for now, and delaying B) when multi-tenancy gets worked on
 * [x] Set up circle ci, with unit test and saving test results 
 * [ ] Set up and test release publication to github 
 
-* [ ] Set up configuration of the reverse proxy through environment variables 
-   * 
+* [x] Set up configuration of the reverse proxy through environment variables 
 
-* [ ] set up http proxy in SCG
-   * [ ] look up documentation & google it
+* [x] set up http proxy in SCG
+   * [x] look up documentation & google it
       * https://github.com/spring-cloud/spring-cloud-gateway/issues/176#issuecomment-554674253
       
 * [ ] Initiate paas-template deployment: ops-depls
@@ -53,6 +52,7 @@ Selecting A) for now, and delaying B) when multi-tenancy gets worked on
    * Set up common broker scripts
    * Use overview broker
    * Assert overview broker received XFF header
+
 * [ ] investigation how to set up acceptance tests
    * [x] http proxy java impl
       * https://github.com/adamfisk/LittleProxy
