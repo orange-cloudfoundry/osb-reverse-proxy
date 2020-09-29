@@ -60,3 +60,16 @@ Selecting A) for now, and delaying B) when multi-tenancy gets worked on
    * wiremock simulating OSB broker
    * [x] Lookup SCG tests
       * https://github.com/spring-cloud/spring-cloud-gateway/blob/578628377420ffe0237c86fbe3648ecd30434f15/spring-cloud-gateway-core/src/test/java/org/springframework/cloud/gateway/test/GatewayIntegrationTests.java
+
+* [ ] troubleshoot basic auth not being apparently propagated
+   * wiretap traces only include user-facing request and response (http server), missing http client traces
+   * [ ] read SCG manual about basic auth propagation  
+
+* [ ] enable actuator endpoints
+   * [ ] backport spring security tests
+      * Pb: my existing sec-group-broker/osb-cmdb tests are springweb tests and not springwebflux
+         * spring-cloud-gateway requires webflux, see https://cloud.spring.io/spring-cloud-gateway/reference/html
+         >  	Spring Cloud Gateway is built on Spring Boot 2.x, Spring WebFlux, and Project Reactor. As a consequence, many of the familiar synchronous libraries (Spring Data and Spring Security, for example) and patterns you know may not apply when you use Spring Cloud Gateway. If you are unfamiliar with these projects, we suggest you begin by reading their documentation to familiarize yourself with some of the new concepts before working with Spring Cloud Gateway.
+         >  	Spring Cloud Gateway requires the Netty runtime provided by Spring Boot and Spring Webflux. It does not work in a traditional Servlet Container or when built as a WAR. 
+   * [ ] backport spring security in webflux matter
+      * https://stackoverflow.com/questions/60603772/spring-security-configuration-basic-auth-spring-cloud-gateway
