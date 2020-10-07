@@ -2,16 +2,17 @@ spring:
   cloud:
     gateway:
 
-      routes:
-        - id: route_grafana
-          uri: https://grafana-cf-mysql.readacted-domain.com
-          predicates:
-            - Host=**
-          filters:
-#            - PreserveHostHeader
-            - SetRequestHostHeader=grafana-cf-mysql.readacted-domain.com
-# Pass token to service instance permission endpoint ? See https://docs.spring.io/spring-cloud/docs/Hoxton.SR7/reference/htmlsingle/#token-relay
-#            - TokenRelay=
+# Example rule that should be put into app config:
+#      routes:
+#        - id: route_grafana
+#          uri: https://grafana-cf-mysql.readacted-domain.com
+#          predicates:
+#            - Host=**
+#          filters:
+##            - PreserveHostHeader
+#            - SetRequestHostHeader=grafana-cf-mysql.readacted-domain.com
+## Pass token to service instance permission endpoint ? See https://docs.spring.io/spring-cloud/docs/Hoxton.SR7/reference/htmlsingle/#token-relay
+##            - TokenRelay=
 
       # https://cloud.spring.io/spring-cloud-gateway/reference/html/#troubleshooting
       httpserver:
@@ -40,19 +41,47 @@ spring:
 #    key-store-type: PKCS12
 
 
-logging:
-  level:
-    reactor:
-      netty: debug
-    org:
-      springframework:
-        cloud:
-          gateway: debug
-
-        web:
-          reactive:
-            socket:
-              server: debug
+#logging:
+#  level:
+#    reactor:
+#      netty: debug
+#    org:
+#      springframework:
+#        cloud:
+#          gateway: debug
+#
+#        web:
+#          reactive:
+#            socket:
+#              server: debug
 #                support: debug
-        security: debug
+#        security: debug
 
+
+
+# turn on actuator endpoints protected by basic auth
+management:
+  endpoint:
+    beans:
+      enabled: true
+    conditions:
+      enabled: true
+    info:
+      enabled: true
+    health:
+      enabled: true
+    httptrace:
+      enabled: true
+    loggers:
+      enabled: true
+    metrics:
+      enabled: true
+    threaddump:
+      enabled: true
+
+  # make enabled endpoints accessible over web. setting "*" seems to expose also non enabled endpoints
+  endpoints:
+    web:
+      exposure:
+        include: "beans,conditions,
+        info,health,httptrace,loggers,metrics,threaddump"
