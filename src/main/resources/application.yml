@@ -41,22 +41,28 @@ spring:
 #    key-store-type: PKCS12
 
 
-#logging:
-#  level:
-#    reactor:
-#      netty: debug
-#    org:
-#      springframework:
-#        cloud:
-#          gateway: debug
-#
-#        web:
-#          reactive:
-#            socket:
-#              server: debug
-#                support: debug
-#        security: debug
+logging:
+  level:
+    reactor:
+      netty: debug
+    org:
+      springframework:
+        cloud:
+          gateway: debug
 
+        web:
+          reactive: debug
+        security: debug
+
+        http:
+          server:
+            reactive: debug
+
+
+        boot:
+          autoconfigure:
+            web: debug
+          actuate: debug
 
 
 # turn on actuator endpoints protected by basic auth
@@ -83,5 +89,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: "beans,conditions,
-        info,health,httptrace,loggers,metrics,threaddump"
+        include: "beans,conditions,info,health,httptrace,loggers,metrics,threaddump"

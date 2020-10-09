@@ -73,3 +73,8 @@ Selecting A) for now, and delaying B) when multi-tenancy gets worked on
          >  	Spring Cloud Gateway requires the Netty runtime provided by Spring Boot and Spring Webflux. It does not work in a traditional Servlet Container or when built as a WAR. 
    * [ ] backport spring security in webflux matter
       * https://stackoverflow.com/questions/60603772/spring-security-configuration-basic-auth-spring-cloud-gateway
+   * [x] Enable spring security reactive logging
+   * [ ] troubleshooting incorrect registered matcher
+   ```
+  07-10-2020 20:52:20.341 [boundedElastic-4] DEBUG o.s.s.w.s.u.m.PathPatternParserServerWebExchangeMatcher.matches - Checking match of request : '/actuator/conditions'; against '/actuator/conditions/**' 
+   ```

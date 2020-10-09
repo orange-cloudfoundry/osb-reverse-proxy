@@ -60,11 +60,13 @@ public class SecurityConfigTest {
 	public void unAuthenticatedSensitiveActuactorEndPoints_shouldFailWith401() {
 		String[] endpoints = {"beans", "conditions", "info", "httptrace", "loggers", "metrics", "threaddump"};
 		for (String endpoint : endpoints) {
+			//without auth
 			webClient.get()
 				.uri("/actuator/" + endpoint)
 				.header("Content-Type", MediaType.APPLICATION_JSON.toString())
 				.exchange()
 				.expectStatus().isUnauthorized();
+			//with invalid auth
 			webClient.get()
 				.uri("/actuator/" + endpoint)
 				.header("Content-Type", MediaType.APPLICATION_JSON.toString())
@@ -78,11 +80,11 @@ public class SecurityConfigTest {
 		return Base64.getEncoder().encodeToString(value.getBytes(Charset.defaultCharset()));
 	}
 	@Test
-	public void basicAuthAuthenticatedAuthenticated_to_ActuactorEndpoints_shouldSucceedWith200() {
+	public void basicAuthAuthenticated_to_ActuactorEndpoints_shouldSucceedWith200() {
 		String[] endpoints = {
 			"conditions",
 			"info",
-//			"httptrace", // fails with 500 error
+			"httptrace", // fails with 500 error
 			"loggers",
 			"metrics",
 			"threaddump"
