@@ -31,12 +31,12 @@ jobs:
           at: ~/osb-reverse-proxy
       - run:
           # To parallelize concourse test running from tarball
-          name: Build osb-reverse-proxy and create jar without tests
+          name: Build osb-reverse-proxy, run tests and create jar
           #          environment:
           #          #Workaround OpenJdk8 regression which crashes JVM. See https://stackoverflow.com/a/53085816
           #          - _JAVA_OPTIONS: "-Djdk.net.URLClassPath.disableClassPathURLCheck=true"
           command: |
-            ./gradlew --continue clean assemble
+            ./gradlew --continue clean check assemble
       - run:
           name: save jar artefacts
           command: |
@@ -45,17 +45,6 @@ jobs:
           when: always
       - store_artifacts:
           path: ./artefacts
-      - run:
-          name: Run unit and component tests
-          #          environment:
-          #          #Workaround OpenJdk8 regression which crashes JVM. See https://stackoverflow.com/a/53085816
-          #          - _JAVA_OPTIONS: "-Djdk.net.URLClassPath.disableClassPathURLCheck=true"
-          # Note: we exclude AT from circle using junit tags to be flexible on unit tests selection.
-          command: |
-            ./gradlew --continue  check
-      # uploads the test metadata from the `target/surefire-reports` directory so that it can show up in the CircleCI dashboard.
-      # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
-      # See https://circleci.com/docs/2.0/collect-test-data/#maven-surefire-plugin-for-java-junit-results
       - run:
           name: Save test results
           # pending aggregation of multi modules report into a single html file
