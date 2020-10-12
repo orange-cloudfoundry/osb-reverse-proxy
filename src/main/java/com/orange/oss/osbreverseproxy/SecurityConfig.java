@@ -75,9 +75,14 @@ public class SecurityConfig {
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 		http
+			// See https://docs.spring.io/spring-security/site/docs/5.3.0.RELEASE/reference/html5/#csrf-when
+			//   Our recommendation is to use CSRF protection for any request that could be processed by a browser
+			//   by normal users. If you are only creating a service that is used by non-browser clients,
+			//   you will likely want to disable CSRF protection.
+			.csrf().disable()
 			.authorizeExchange((exchanges) -> {
 				exchanges.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
-				exchanges.anyExchange().authenticated();
+				exchanges.matchers(EndpointRequest.toAnyEndpoint().excluding(HealthEndpoint.class)).authenticated();
 		});
 		http.httpBasic(Customizer.withDefaults());
 		http.formLogin(Customizer.withDefaults());
