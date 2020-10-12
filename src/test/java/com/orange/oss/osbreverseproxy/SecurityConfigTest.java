@@ -3,6 +3,7 @@ package com.orange.oss.osbreverseproxy;
 import java.nio.charset.Charset;
 import java.util.Base64;
 
+import org.bouncycastle.util.Arrays;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +46,18 @@ public class SecurityConfigTest {
 
 	public static final String PASSWORD = "unit-test-password";
 
+	public static final String[] SENSITIVE_ACTUATOR_ENDPOINTS = {
+		"info",
+//			"gateway", //404
+//			"conditions",
+//			"httptrace", // fails with 500 error
+		"loggers",
+		"metrics",
+//			"threaddump"
+	};
+	public static final String[] ALL_EXPOSED_ACTUATOR_ENDPOINTS = Arrays.append(SENSITIVE_ACTUATOR_ENDPOINTS, "health");
+
+
 	@Autowired
 	private WebTestClient webClient;
 
@@ -59,8 +72,7 @@ public class SecurityConfigTest {
 
 	@Test
 	public void unAuthenticatedSensitiveActuactorEndPoints_shouldFailWith401() {
-		String[] endpoints = {"beans", "conditions", "info", "httptrace", "loggers", "metrics", "threaddump"};
-		for (String endpoint : endpoints) {
+		for (String endpoint : SENSITIVE_ACTUATOR_ENDPOINTS) {
 			//without auth
 			webClient.get()
 				.uri("/actuator/" + endpoint)
@@ -82,20 +94,10 @@ public class SecurityConfigTest {
 	}
 
 	@Test
-	@Disabled()
 	public void basicAuthAuthenticated_to_ActuactorEndpoints_shouldSucceedWith200() {
-		String[] endpoints = {
-			"conditions",
-			"info",
-			"gateway",
-			"httptrace", // fails with 500 error
-			"loggers",
-			"metrics",
-			"threaddump"
-		};
 		//Note: did not find proper basic auth support in WebTestClient
 		//Workaround with header inspired from https://github.com/spring-projects/spring-security-reactive/blob/37749a64f782c2b2f81afb3db1b30cea3e956839/sample/src/test/java/sample/SecurityTests.java#L118
-		for (String endpoint : endpoints) {
+		for (String endpoint : ALL_EXPOSED_ACTUATOR_ENDPOINTS) {
 			webClient
 				.get()
 				.uri("/actuator/" + endpoint)

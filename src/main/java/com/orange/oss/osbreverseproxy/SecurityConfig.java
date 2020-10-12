@@ -6,14 +6,18 @@ import reactor.util.Loggers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
 
 /**
  * See https://stackoverflow.com/questions/60603772/spring-security-configuration-basic-auth-spring-cloud-gateway for
@@ -48,25 +52,68 @@ public class SecurityConfig {
 		return new MapReactiveUserDetailsService(user);
 	}
 
+	//Default spring-boot-actuator config authenticates any actuator endpoint except info and health endpoints
+	//See https://github.com/spring-projects/spring-boot/blob/3b28b1cadeaf0c2112de90a7662883afc0901c9e/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure/security/reactive/ReactiveManagementWebSecurityAutoConfiguration.java#L60
+
+	//In the future, we'll want to further restrict roles to distinguish between osb-cmdb admins (getting
+	//permissions to/act/on
+	//osb-reverse-proxy: e.g. increase log levels, threadumps...) and osb-providers (only getting read access to
+	//selected endpoints such as httptrace)
+
+	//See https://spring.io/guides/topicals/spring-security-architecture for a primer
+
+	//SpringBootActuator default spring security autoconfig does not kick in:
+	//See sources at https://github.com/spring-projects/spring-boot/blob/3b28b1cadeaf0c2112de90a7662883afc0901c9e/spring-boot-project/spring-boot-actuator-autoconfigure/src/main/java/org/springframework/boot/actuate/autoconfigure/security/reactive/ReactiveManagementWebSecurityAutoConfiguration.java#L57
+	//Observed symptom:
+	//	ReactiveSecurityAutoConfiguration.EnableWebFluxSecurityConfiguration:
+	//	Did not match:
+	//		- @ConditionalOnMissingBean (types: org.springframework.security.web.server.WebFilterChainProxy; SearchStrategy: all) found beans of type 'org.springframework.security.web.server.WebFilterChainProxy' org.springframework.security.config.annotation.web.reactive.WebFluxSecurityConfiguration.WebFilterChainFilter (OnBeanCondition)
+	//	Matched:
+	//		- found ReactiveWebApplicationContext (OnWebApplicationCondition)
+
+
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 		http
-			// See https://docs.spring.io/spring-security/site/docs/5.3.0.RELEASE/reference/html5/#csrf-when
-			//   Our recommendation is to use CSRF protection for any request that could be processed by a browser
-			//   by normal users. If you are only creating a service that is used by non-browser clients,
-			//   you will likely want to disable CSRF protection.
-			.csrf().disable()
-			.authorizeExchange()
-			    //actuator config
-				.matchers(EndpointRequest.toAnyEndpoint()
-					.excluding(HealthEndpoint.class))
-					.authenticated()
-				.matchers(EndpointRequest.to(HealthEndpoint.class))
-					.permitAll()
-			// all other reversed-proxied endpoints (OSB or dashboards) should be propagated through
-			// spring cloud gateway without spring security interfering
-			.anyExchange().permitAll();
+			.authorizeExchange((exchanges) -> {
+				exchanges.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
+				exchanges.anyExchange().authenticated();
+		});
+		http.httpBasic(Customizer.withDefaults());
+		http.formLogin(Customizer.withDefaults());
 		return http.build();
 	}
+
+	// The commented variant below was a failed attempt to craft similar config from stack overflow hints.
+	// We likely need to remove this.
+
+//
+//	@Bean
+//	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+//		http
+//			//Disable websession (polutting debug traces and slightly impacting performance
+//			//See https://stackoverflow.com/questions/56056404/disable-websession-creation-when-using-spring-security-with-spring-webflux
+//			.requestCache()
+//				.requestCache(NoOpServerRequestCache.getInstance())
+//			.and()
+//				.securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+//			// See https://docs.spring.io/spring-security/site/docs/5.3.0.RELEASE/reference/html5/#csrf-when
+//			//   Our recommendation is to use CSRF protection for any request that could be processed by a browser
+//			//   by normal users. If you are only creating a service that is used by non-browser clients,
+//			//   you will likely want to disable CSRF protection.
+//			.csrf().disable()
+//			.authorizeExchange()
+//			    //actuator config
+//				.matchers(EndpointRequest.toAnyEndpoint()
+//					.excluding(HealthEndpoint.class))
+//					.hasRole("USER")
+//				.matchers(EndpointRequest.to(HealthEndpoint.class))
+//					.permitAll()
+//				// all other reversed-proxied endpoints (OSB or dashboards) should be propagated through
+//				// spring cloud gateway without spring security interfering
+//				.anyExchange().permitAll();
+//		return http.build();
+//	}
+
 
 }

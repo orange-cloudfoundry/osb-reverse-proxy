@@ -82,3 +82,4 @@ Selecting A) for now, and delaying B) when multi-tenancy gets worked on
 2020-10-12T09:24:37.52+0200 [APP/PROC/WEB/0] OUT 2020-10-12 07:24:37.523 DEBUG 6 --- [oundedElastic-1] ebSessionServerSecurityContextRepository : No SecurityContext found in WebSession: 'org.springframework.web.server.session.InMemoryWebSessionStore$InMemoryWebSession@7a2507b0'
 
    ```
+     * Get back to basics https://spring.io/guides/topicals/spring-security-architecture
