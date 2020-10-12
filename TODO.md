@@ -76,5 +76,9 @@ Selecting A) for now, and delaying B) when multi-tenancy gets worked on
    * [x] Enable spring security reactive logging
    * [ ] troubleshooting incorrect registered matcher
    ```
-  07-10-2020 20:52:20.341 [boundedElastic-4] DEBUG o.s.s.w.s.u.m.PathPatternParserServerWebExchangeMatcher.matches - Checking match of request : '/actuator/conditions'; against '/actuator/conditions/**' 
+2020-10-12T09:24:37.51+0200 [APP/PROC/WEB/0] OUT 2020-10-12 07:24:37.519 DEBUG 6 --- [oundedElastic-1] a.DelegatingReactiveAuthorizationManager : Checking authorization on '/actuator/conditions' using org.springframework.security.authorization.AuthenticatedReactiveAuthorizationManager@562d7288
+2020-10-12T09:24:37.52+0200 [APP/PROC/WEB/0] OUT 2020-10-12 07:24:37.521 DEBUG 6 --- [oundedElastic-1] ebSessionServerSecurityContextRepository : No SecurityContext found in WebSession: 'org.springframework.web.server.session.InMemoryWebSessionStore$InMemoryWebSession@7a2507b0'
+2020-10-12T09:24:37.52+0200 [APP/PROC/WEB/0] OUT 2020-10-12 07:24:37.522 DEBUG 6 --- [oundedElastic-1] o.s.s.w.s.a.AuthorizationWebFilter       : Authorization failed: Access Denied
+2020-10-12T09:24:37.52+0200 [APP/PROC/WEB/0] OUT 2020-10-12 07:24:37.523 DEBUG 6 --- [oundedElastic-1] ebSessionServerSecurityContextRepository : No SecurityContext found in WebSession: 'org.springframework.web.server.session.InMemoryWebSessionStore$InMemoryWebSession@7a2507b0'
+
    ```
