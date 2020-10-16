@@ -48,7 +48,7 @@ logging:
     org:
       springframework:
         cloud:
-          gateway: trace #See example trace at https://github.com/spring-cloud/spring-cloud-gateway/blob/1cf449c8705ac63f55c7e7f96123a96e440168fe/spring-cloud-gateway-core/src/main/java/org/springframework/cloud/gateway/handler/predicate/PathRoutePredicateFactory.java#L58
+          gateway: debug
 
         web:
           reactive: debug
