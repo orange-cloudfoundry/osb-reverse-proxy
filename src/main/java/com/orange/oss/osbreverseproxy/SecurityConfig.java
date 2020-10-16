@@ -113,6 +113,8 @@ public class SecurityConfig {
 		//we need to split it into a distinct spring-security filter
 		http.httpBasic(Customizer.withDefaults());
 		http.formLogin(Customizer.withDefaults());
+		//Disable CRSF for actuator endpoints to accept log level reload with POST requests. See https://www.baeldung.com/spring-boot-changing-log-level-at-runtime
+		http.csrf().disable();
 		return http.build();
 	}
 
