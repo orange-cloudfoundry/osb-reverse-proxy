@@ -11,11 +11,11 @@ import org.springframework.validation.annotation.Validated;
 public class OsbReverseProxyProperties {
 
 	@NotNull
-	String backendBrokerUri;
+	private String backendBrokerUri;
 	@NotNull
-	String httpProxyHost;
+	private String httpProxyHost;
 	@Positive //See https://www.baeldung.com/javax-validation
-	int httpProxyPort;
+	private int httpProxyPort;
 
 
 	public String getBackendBrokerUri() {

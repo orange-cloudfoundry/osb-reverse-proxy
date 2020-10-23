@@ -42,9 +42,13 @@ class ExtendedTraceableServerHttpResponse implements TraceableResponse {
 		ServerHttpResponse response = exchange.getResponse();
 		this.status = (response.getStatusCode() != null) ? response.getStatusCode().value() : HttpStatus.OK.value();
 		this.headers = new LinkedHashMap<>(response.getHeaders());
-		Object cachedRequestBodyObject = exchange.getAttribute("cachedResponseBodyObject");
+		Object cachedResponseBodyObject = exchange.getAttribute("cachedResponseBodyObject");
+		if (cachedResponseBodyObject != null) {
+			this.headers.put("response_body", singletonList(cachedResponseBodyObject.toString()));
+		}
+		Object cachedRequestBodyObject = exchange.getAttribute("cachedRequestBodyObject");
 		if (cachedRequestBodyObject != null) {
-			this.headers.put("response_body", singletonList(cachedRequestBodyObject.toString()));
+			this.headers.put("request_body", singletonList(cachedRequestBodyObject.toString()));
 		}
 	}
 
