@@ -133,7 +133,7 @@ How to provide self service http request log details ?
                      * Consider keeping a ReadBodyPredicateFactory.Config statically initialized 
             * [ ] Use java config to set up ResponseBodyGatewayFilterFactory unmodified
                * Implies to move the whole Route configuration to java config
-                  * [ ] 
+                  * [x] ConfigurationProperties for SCG java config 
                
             
             
