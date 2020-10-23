@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: "osb-reverse-proxy-template" # required for opentracing. should be overriden in symlinked copies
   cloud:
     gateway:
 
@@ -14,6 +16,22 @@ spring:
 ## Pass token to service instance permission endpoint ? See https://docs.spring.io/spring-cloud/docs/Hoxton.SR7/reference/htmlsingle/#token-relay
 ##            - TokenRelay=
 
+      routes:
+        - id: route_overview
+          uri: https://overview-broker.redacted-domain
+          predicates:
+            - Host=**
+            # Restricts to OSB API
+            - Path=/v2/{top-osb-segment},/**/v2/{prefixed-osb-segment}
+            - name: ExtendedReadBodyPredicateFactory
+              args:
+                inClass: "#{T(String)}"
+                predicate: "#{@testRequestBody}"
+            - name: CopiedModifyResponseBodyGatewayFilterFactory
+          filters:
+            - SetRequestHostHeader=overview-broker.redacted-domain
+
+
       # https://cloud.spring.io/spring-cloud-gateway/reference/html/#troubleshooting
       httpserver:
         wiretap: true
@@ -28,9 +46,9 @@ spring:
 
          # Instruct http client to use an outgoing http proxy
          # See https://github.com/spring-cloud/spring-cloud-gateway/issues/176#issuecomment-554674253
-        proxy:
-          host: ${osbreverseproxy.http_proxy.host}
-          port: ${osbreverseproxy.http_proxy.port}
+#        proxy:
+#          host: ${osbreverseproxy.http_proxy.host}
+#          port: ${osbreverseproxy.http_proxy.port}
 # https://cloud.spring.io/spring-cloud-gateway/reference/html/#tls-and-ssl
 #server:
 #  ssl:
@@ -51,7 +69,7 @@ logging:
           gateway: debug
 
         web:
-          reactive: debug
+          reactive: trace
         security: debug
 
         http:
