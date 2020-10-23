@@ -131,7 +131,24 @@ How to provide self service http request log details ?
                * Duplicate it with hardcoding Config entries to result to an empty Config object
                   * Pb: this breaks compilation as most code is using type inference. 
                      * Consider keeping a ReadBodyPredicateFactory.Config statically initialized 
-            * [ ]
+            * [ ] Use java config to set up ResponseBodyGatewayFilterFactory unmodified
+               * Implies to move the whole Route configuration to java config
+                  * [ ] 
+               
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             
 * spring cloud gateway 
    * custom filter and custom endpoint https://github.com/spring-cloud/spring-cloud-gateway/issues/1003#issuecomment-541740864
