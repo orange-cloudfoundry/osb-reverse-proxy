@@ -1,10 +1,10 @@
 package com.orange.oss.osbreverseproxy;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
@@ -20,30 +20,51 @@ class OsbReverseProxyPropertiesTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withInitializer(conditionEvaluationReportLoggingListener)
-		.withConfiguration(AutoConfigurations.of(ReverseProxyRoutesConfiguration.class))
-		.withUserConfiguration(InjectMockBeansConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(ReverseProxyRouteConfiguration.class))
+		.withUserConfiguration(LoadPropertiesConfiguration.class)
+		.withPropertyValues(
+			"spring.profiles.active=offline-test" //don't start spring cloud gateway in this unit test focused on OsbReverseProxyProperties
+		);
 
 
 	@Configuration
-	public static class InjectMockBeansConfiguration {
+	@EnableConfigurationProperties(OsbReverseProxyProperties.class)
+	public static class LoadPropertiesConfiguration {
 
-//		@Bean
-//		public CloudFoundryTargetProperties targetProperties() {
-//			return Mockito.mock(CloudFoundryTargetProperties.class, Mockito.RETURNS_SMART_NULLS);
-//		}
 	}
 
 	@Test
-	void fails_when_no_broker_declared() {
+	void fails_when_broker_missing() {
 		this.contextRunner
 			.withPropertyValues(
-				"foo=bar"
+				"osbreverseproxy.httpProxyHost=localhost",
+				"osbreverseproxy.httpProxyPort=3128"
 			)
 			.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	void loads_broker_uri() {
+	void fails_when_proxy_missing() {
+		this.contextRunner
+			.withPropertyValues(
+				"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix"
+			)
+			.run((context) -> assertThat(context).hasFailed());
+	}
+
+	@Test
+	void fails_when_invalid_proxy() {
+		this.contextRunner
+			.withPropertyValues(
+				"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix",
+				"osbreverseproxy.httpProxyHost=localhost",
+				"osbreverseproxy.httpProxyPort=-300"
+			)
+			.run((context) -> assertThat(context).hasFailed());
+	}
+
+	@Test
+	void loads_brokeruri_and_proxy() {
 		this.contextRunner
 			.withPropertyValues(
 				"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix",
@@ -56,6 +77,8 @@ class OsbReverseProxyPropertiesTest {
 				OsbReverseProxyProperties osbReverseProxyProperties = context.getBean(OsbReverseProxyProperties.class);
 				assertThat(osbReverseProxyProperties.getBackendBrokerUri()).isEqualTo(
 					"https://remote_broker:443/prefix");
+				assertThat(osbReverseProxyProperties.getHttpProxyHost()).isEqualTo("localhost");
+				assertThat(osbReverseProxyProperties.getHttpProxyPort()).isEqualTo(3128);
 			});
 	}
 
