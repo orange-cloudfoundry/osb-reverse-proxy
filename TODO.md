@@ -134,9 +134,12 @@ How to provide self service http request log details ?
             * [ ] Use java config to set up ResponseBodyGatewayFilterFactory unmodified
                * Implies to move the whole Route configuration to java config
                   * [x] ConfigurationProperties for SCG java config 
-                  * [ ] Route config
-               
-            
+                  * [x] Initial Route config
+                    - request and response body recorded as headers into actuator httptrace response
+                    - duplicates actuator httptraces
+                  * Fix Initial Route config
+                    - [x] request and response body recorded as headers into actuator httptrace response
+                    - [ ] duplicates actuator httptraces
             
             
             

@@ -34,6 +34,7 @@ import org.springframework.web.server.WebSession;
 
 //Overriden to instanciate ExtendedServerWebExchangeTraceableRequest and
 //ExtendedTraceableServerHttpResponse
+//Forked from https://github.com/spring-projects/spring-boot/blob/7df18d9a91f1cee8f0f5a4e0a17d56c85ca75835/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/web/trace/reactive/HttpTraceWebFilter.java
 /**
  * A {@link WebFilter} for tracing HTTP requests.
  *
@@ -88,9 +89,12 @@ public class ExtendedHttpTraceWebFilter implements WebFilter, Ordered {
 
 	private Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain, Principal principal,
 			WebSession session) {
-		ExtendedServerWebExchangeTraceableRequest request = new ExtendedServerWebExchangeTraceableRequest(exchange);
-		HttpTrace trace = this.tracer.receivedRequest(request);
 		exchange.getResponse().beforeCommit(() -> {
+			//Request needs to be read after other filters including spring cloud gateway
+			//so that the request body gets cached as exchange attribute
+			//We therefore run both request and response after response is received
+			ExtendedServerWebExchangeTraceableRequest request = new ExtendedServerWebExchangeTraceableRequest(exchange);
+			HttpTrace trace = this.tracer.receivedRequest(request);
 			ExtendedTraceableServerHttpResponse response = new ExtendedTraceableServerHttpResponse(exchange);
 			this.tracer.sendingResponse(trace, response, () -> principal, () -> getStartedSessionId(session));
 			this.repository.add(trace);
