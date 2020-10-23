@@ -139,7 +139,7 @@ How to provide self service http request log details ?
                     - duplicates actuator httptraces
                   * Fix Initial Route config
                     - [x] request and response body recorded as headers into actuator httptrace response
-                    - [ ] duplicates actuator httptraces
+                    - [x] duplicates actuator httptraces
             
             
             

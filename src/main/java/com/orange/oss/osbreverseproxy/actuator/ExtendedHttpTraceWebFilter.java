@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
 import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
 import org.springframework.boot.actuate.trace.http.Include;
+import org.springframework.boot.actuate.web.trace.reactive.HttpTraceWebFilter;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -32,17 +33,20 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.server.WebSession;
 
+//Forked from https://github.com/spring-projects/spring-boot/blob/7df18d9a91f1cee8f0f5a4e0a17d56c85ca75835/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/web/trace/reactive/HttpTraceWebFilter.java
+//
 //Overriden to instanciate ExtendedServerWebExchangeTraceableRequest and
 //ExtendedTraceableServerHttpResponse
-//Forked from https://github.com/spring-projects/spring-boot/blob/7df18d9a91f1cee8f0f5a4e0a17d56c85ca75835/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/web/trace/reactive/HttpTraceWebFilter.java
-/**
- * A {@link WebFilter} for tracing HTTP requests.
- *
- * @author Andy Wilkinson
- * @since 2.0.0
- */
-@Component
-public class ExtendedHttpTraceWebFilter implements WebFilter, Ordered {
+//
+// Must extend HttpTraceWebFilter for HttpTraceAutoConfiguration ConditionalOnMissingBean to create duplicate
+// HttpTraceWebFilter resulting in duplicate http trace.
+///**
+// * A {@link WebFilter} for tracing HTTP requests.
+// *
+// * @author Andy Wilkinson
+// * @since 2.0.0
+// */
+public class ExtendedHttpTraceWebFilter extends HttpTraceWebFilter implements WebFilter, Ordered {
 
 	private static final Object NONE = new Object();
 
@@ -57,6 +61,7 @@ public class ExtendedHttpTraceWebFilter implements WebFilter, Ordered {
 	private final Set<Include> includes;
 
 	public ExtendedHttpTraceWebFilter(HttpTraceRepository repository, HttpExchangeTracer tracer, Set<Include> includes) {
+		super(repository, tracer, includes);
 		this.repository = repository;
 		this.tracer = tracer;
 		this.includes = includes;

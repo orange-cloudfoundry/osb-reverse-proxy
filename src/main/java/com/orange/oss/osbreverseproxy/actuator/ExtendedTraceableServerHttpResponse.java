@@ -46,10 +46,6 @@ class ExtendedTraceableServerHttpResponse implements TraceableResponse {
 		if (cachedResponseBodyObject != null) {
 			this.headers.put("response_body", singletonList(cachedResponseBodyObject.toString()));
 		}
-		Object cachedRequestBodyObject = exchange.getAttribute("cachedRequestBodyObject");
-		if (cachedRequestBodyObject != null) {
-			this.headers.put("request_body", singletonList(cachedRequestBodyObject.toString()));
-		}
 	}
 
 	@Override
