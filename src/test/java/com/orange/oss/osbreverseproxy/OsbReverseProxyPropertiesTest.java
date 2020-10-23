@@ -37,39 +37,16 @@ class OsbReverseProxyPropertiesTest {
 	void fails_when_broker_missing() {
 		this.contextRunner
 			.withPropertyValues(
-				"osbreverseproxy.httpProxyHost=localhost",
-				"osbreverseproxy.httpProxyPort=3128"
+
 			)
 			.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	void fails_when_proxy_missing() {
+	void loads_brokeruri() {
 		this.contextRunner
 			.withPropertyValues(
 				"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix"
-			)
-			.run((context) -> assertThat(context).hasFailed());
-	}
-
-	@Test
-	void fails_when_invalid_proxy() {
-		this.contextRunner
-			.withPropertyValues(
-				"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix",
-				"osbreverseproxy.httpProxyHost=localhost",
-				"osbreverseproxy.httpProxyPort=-300"
-			)
-			.run((context) -> assertThat(context).hasFailed());
-	}
-
-	@Test
-	void loads_brokeruri_and_proxy() {
-		this.contextRunner
-			.withPropertyValues(
-				"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix",
-				"osbreverseproxy.httpProxyHost=localhost",
-				"osbreverseproxy.httpProxyPort=3128"
 			)
 			.withPropertyValues(requiredProperties())
 			.run((context) -> {
@@ -77,8 +54,6 @@ class OsbReverseProxyPropertiesTest {
 				OsbReverseProxyProperties osbReverseProxyProperties = context.getBean(OsbReverseProxyProperties.class);
 				assertThat(osbReverseProxyProperties.getBackendBrokerUri()).isEqualTo(
 					"https://remote_broker:443/prefix");
-				assertThat(osbReverseProxyProperties.getHttpProxyHost()).isEqualTo("localhost");
-				assertThat(osbReverseProxyProperties.getHttpProxyPort()).isEqualTo(3128);
 			});
 	}
 

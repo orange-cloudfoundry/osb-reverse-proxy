@@ -131,7 +131,7 @@ How to provide self service http request log details ?
                * Duplicate it with hardcoding Config entries to result to an empty Config object
                   * Pb: this breaks compilation as most code is using type inference. 
                      * Consider keeping a ReadBodyPredicateFactory.Config statically initialized 
-            * [ ] Use java config to set up ResponseBodyGatewayFilterFactory unmodified
+            * [x] Use java config to set up ResponseBodyGatewayFilterFactory unmodified
                * Implies to move the whole Route configuration to java config
                   * [x] ConfigurationProperties for SCG java config 
                   * [x] Initial Route config
@@ -140,7 +140,11 @@ How to provide self service http request log details ?
                   * Fix Initial Route config
                     - [x] request and response body recorded as headers into actuator httptrace response
                     - [x] duplicates actuator httptraces
-            
+            * [ ] submit issue to springboot to simplify injection of custom behavior
+            * [x] clean up http proxy handling to allow local debugging without proxy
+               * remove input validation, and only keep a single property injected in application.yml
+               * replace osbreverseproxy proxy with spring cloud gateway properties
+                  * possibly validating input by getting them injected
             
             
             
