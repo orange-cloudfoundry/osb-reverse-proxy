@@ -1,18 +1,8 @@
 spring:
+  application:
+    name: "osb-reverse-proxy-template" # required for opentracing. should be overriden in symlinked copies
   cloud:
     gateway:
-
-# Example rule that should be put into app config:
-#      routes:
-#        - id: route_grafana
-#          uri: https://grafana-cf-mysql.readacted-domain.com
-#          predicates:
-#            - Host=**
-#          filters:
-##            - PreserveHostHeader
-#            - SetRequestHostHeader=grafana-cf-mysql.readacted-domain.com
-## Pass token to service instance permission endpoint ? See https://docs.spring.io/spring-cloud/docs/Hoxton.SR7/reference/htmlsingle/#token-relay
-##            - TokenRelay=
 
       # https://cloud.spring.io/spring-cloud-gateway/reference/html/#troubleshooting
       httpserver:
@@ -26,11 +16,6 @@ spring:
         ssl:
           useInsecureTrustManager: true
 
-         # Instruct http client to use an outgoing http proxy
-         # See https://github.com/spring-cloud/spring-cloud-gateway/issues/176#issuecomment-554674253
-        proxy:
-          host: ${osbreverseproxy.http_proxy.host}
-          port: ${osbreverseproxy.http_proxy.port}
 # https://cloud.spring.io/spring-cloud-gateway/reference/html/#tls-and-ssl
 #server:
 #  ssl:
@@ -51,7 +36,7 @@ logging:
           gateway: debug
 
         web:
-          reactive: debug
+          reactive: trace
         security: debug
 
         http:
