@@ -140,11 +140,19 @@ How to provide self service http request log details ?
                   * Fix Initial Route config
                     - [x] request and response body recorded as headers into actuator httptrace response
                     - [x] duplicates actuator httptraces
-            * [ ] submit issue to springboot to simplify injection of custom behavior
             * [x] clean up http proxy handling to allow local debugging without proxy
                * remove input validation, and only keep a single property injected in application.yml
                * replace osbreverseproxy proxy with spring cloud gateway properties
                   * possibly validating input by getting them injected
+            * [ ] submit issue to springboot to simplify injection of custom behavior
+            * [ ] simplify forked springboot actuactor code ?  
+            * [x] test replacement of  ReadBodyPredicate with ReplaceRequestBody lambda
+            * [ ] refine security config to restrict actuator httptrace access to service consummer
+               * [ ] add new service consummer login/pwd entries in properties
+            * [ ] Limit DoS by 
+               * [ ] trimming saved context to 10kB    
+               * [ ] removing saved body from exchange    
+            
             
             
             
