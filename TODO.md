@@ -149,9 +149,9 @@ How to provide self service http request log details ?
             * [x] test replacement of  ReadBodyPredicate with ReplaceRequestBody lambda
             * [ ] refine security config to restrict actuator httptrace access to service consummer
                * [ ] add new service consummer login/pwd entries in properties
-            * [ ] Limit DoS by 
+            * [x] Limit DoS by 
                * [x] trimming saved context to 10kB    
-               * [ ] removing saved body from exchange    
+               * [x] removing saved body from exchange    
             
             
             

@@ -42,7 +42,8 @@ class ExtendedTraceableServerHttpResponse implements TraceableResponse {
 		ServerHttpResponse response = exchange.getResponse();
 		this.status = (response.getStatusCode() != null) ? response.getStatusCode().value() : HttpStatus.OK.value();
 		this.headers = new LinkedHashMap<>(response.getHeaders());
-		Object cachedResponseBodyObject = exchange.getAttribute("cachedResponseBodyObject");
+		//Remove the cached body to ease garbage collection in case of large response bodies
+		Object cachedResponseBodyObject = exchange.getAttributes().remove("cachedResponseBodyObject");
 		if (cachedResponseBodyObject != null) {
 			this.headers.put("response_body", singletonList(cachedResponseBodyObject.toString()));
 		}
