@@ -144,14 +144,24 @@ How to provide self service http request log details ?
                * remove input validation, and only keep a single property injected in application.yml
                * replace osbreverseproxy proxy with spring cloud gateway properties
                   * possibly validating input by getting them injected
-            * [ ] submit issue to springboot to simplify injection of custom behavior
+            * [x] submit issue to springboot to simplify injection of custom behavior. https://github.com/spring-projects/spring-boot/issues/23907
             * [ ] simplify forked springboot actuactor code ?  
             * [x] test replacement of  ReadBodyPredicate with ReplaceRequestBody lambda
             * [ ] refine security config to restrict actuator httptrace access to service consummer
                * [ ] add new service consummer login/pwd entries in properties
             * [x] Limit DoS by 
                * [x] trimming saved context to 10kB    
-               * [x] removing saved body from exchange    
+               * [x] removing saved body from exchange
+            * [ ] add automated tests for actuator traces
+               * [ ] add base skeletton by copy/paste spring cloud gateway tests related to modify body filter    
+                  * [ ] relies on http://httpbin.org:80 online service    
+               * [ ] invoke httpbin with request body      
+                  * [ ] invoke httptrace actuator endpoint, and assert request and response headers is present
+               * Result: 
+                  * good for testing custom gateway routes designed to comply to httpbin endpoints. 
+                  * Not suited for testing OSB v2 endpoints, which would require an echo service or a wiremock
+                     * No traces of wiremock in spring-cloud-gateway source code
+                     * Transiently paused this test effort for now      
             
             
             
