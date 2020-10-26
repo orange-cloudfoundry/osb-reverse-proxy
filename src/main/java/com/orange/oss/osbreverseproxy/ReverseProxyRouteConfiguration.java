@@ -1,5 +1,6 @@
 package com.orange.oss.osbreverseproxy;
 
+import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -29,7 +30,9 @@ public class ReverseProxyRouteConfiguration {
 						.modifyResponseBody(String.class, String.class,
 							(webExchange, originalBody) -> {
 								if (originalBody != null) {
-									webExchange.getAttributes().put("cachedResponseBodyObject", originalBody);
+									//See https://stackoverflow.com/a/19975149/1484823 for abbreviation
+									String abbreviatedBody = StringUtils.abbreviate(originalBody, 10000);
+									webExchange.getAttributes().put("cachedResponseBodyObject", abbreviatedBody);
 									return Mono.just(originalBody);
 								} else {
 									return Mono.empty();
@@ -38,7 +41,9 @@ public class ReverseProxyRouteConfiguration {
 						.modifyRequestBody(String.class, String.class,
 							(webExchange, originalBody) -> {
 								if (originalBody != null) {
-									webExchange.getAttributes().put("cachedRequestBodyObject", originalBody);
+									//See https://stackoverflow.com/a/19975149/1484823 for abbreviation
+									String abbreviatedBody = StringUtils.abbreviate(originalBody, 10000);
+									webExchange.getAttributes().put("cachedRequestBodyObject", abbreviatedBody);
 									return Mono.just(originalBody);
 								} else {
 									return Mono.empty();
