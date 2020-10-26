@@ -38,7 +38,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 	"osbreverseproxy.http_proxy.host=localhost",
 	"osbreverseproxy.http_proxy.port=3128",
 	"spring.security.user.name=" + SecurityConfigTest.USER,
-	"spring.security.user.password=" + SecurityConfigTest.PASSWORD
+	"spring.security.user.password=" + SecurityConfigTest.PASSWORD,
+	//don't start spring cloud gateway in this unit test focused on spring security
+	"spring.profiles.active=offline-test"
 })
 public class SecurityConfigTest {
 
