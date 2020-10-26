@@ -11,8 +11,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @DirtiesContext
 @TestPropertySource(properties = {
-	"spring.security.user.name=" + SecurityConfigTest.USER,
-	"spring.security.user.password=" + SecurityConfigTest.PASSWORD,
+	"spring.security.user.name=" + SecurityConfigTest.ADMIN_USER,
+	"spring.security.user.password=" + SecurityConfigTest.ADMIN_PASSWORD,
 	"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix",
 	//The later two are optional and not enforced
 	"spring.cloud.gateway.httpclient.proxy.host=my-http-proxy",

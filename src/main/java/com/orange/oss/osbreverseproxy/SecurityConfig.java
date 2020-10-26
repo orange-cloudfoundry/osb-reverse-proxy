@@ -6,8 +6,9 @@ import reactor.util.Loggers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.info.InfoEndpoint;
+import org.springframework.boot.actuate.trace.http.HttpTraceEndpoint;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,6 +32,7 @@ import org.springframework.security.web.server.util.matcher.PathPatternParserSer
  */
 @Configuration
 @EnableWebFluxSecurity
+@EnableConfigurationProperties(OsbReverseProxyProperties.class)
 //@Order(SecurityProperties.BASIC_AUTH_ORDER - 11)
 public class SecurityConfig {
 
@@ -47,13 +49,18 @@ public class SecurityConfig {
 	private String osbPassword;
 
 	@Bean
-	public MapReactiveUserDetailsService userDetailsService() {
-		UserDetails user = User.withDefaultPasswordEncoder()
+	public MapReactiveUserDetailsService userDetailsService(OsbReverseProxyProperties osbReverseProxyProperties) {
+		UserDetails osbClientUser = User.withDefaultPasswordEncoder()
 			.username(osbUser)
 			.password(osbPassword)
-			.roles("USER")
+			.roles("ADMIN")
 			.build();
-		return new MapReactiveUserDetailsService(user);
+		UserDetails osbProviderUser = User.withDefaultPasswordEncoder()
+			.username(osbReverseProxyProperties.getServiceProviderUser())
+			.password(osbReverseProxyProperties.getServiceProviderPassword())
+			.roles("HTTPTRACE_ONLY")
+			.build();
+		return new MapReactiveUserDetailsService(osbClientUser, osbProviderUser);
 	}
 
 	//Default spring-boot-actuator config authenticates any actuator endpoint except info and health endpoints
@@ -76,9 +83,12 @@ public class SecurityConfig {
 	//		- found ReactiveWebApplicationContext (OnWebApplicationCondition)
 
 
+	/**
+	 * Osb API requires basic auth with ADMIN role
+	 */
 	@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
 	@Bean
-	public SecurityWebFilterChain osbUnRestrictedSpringSecurityFilterChain(ServerHttpSecurity http) {
+	public SecurityWebFilterChain osbSpringSecurityFilterChain(ServerHttpSecurity http) {
 		http
 			// See https://docs.spring.io/spring-security/site/docs/5.3.0.RELEASE/reference/html5/#csrf-when
 			//   Our recommendation is to use CSRF protection for any request that could be processed by a browser
@@ -97,17 +107,26 @@ public class SecurityConfig {
 			//Scope this filter only to /v2 requests, otherwise this will handle other filters as well
 			//see background at https://spring.io/guides/topicals/spring-security-architecture#_creating_and_customizing_filter_chains
 			.authorizeExchange()
-				.anyExchange().permitAll();
+				.anyExchange().hasRole("ADMIN");
 		return http.build();
 	}
 
 
+	/**
+	 * Actuator endpoints is a mix of:
+	 * <ol>
+	 *   <li/> health does not require auth
+	 *   <li/> httptrace can be invoked by service consummer or admin
+	 *   <li/> other endpoints can only be invoked by admin
+	 * </ol>
+	 */
 	@Bean
-	public SecurityWebFilterChain actuatorSpringSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+	public SecurityWebFilterChain actuatorSpringSecurityFilterChain(ServerHttpSecurity http) {
 		http.authorizeExchange((exchanges) -> {
 			exchanges
 				.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
-				.matchers(EndpointRequest.toAnyEndpoint().excluding(HealthEndpoint.class)).authenticated();
+				.matchers(EndpointRequest.to(HttpTraceEndpoint.class)).hasAnyRole("ADMIN", "HTTPTRACE_ONLY")
+				.matchers(EndpointRequest.toAnyEndpoint().excluding(HealthEndpoint.class, HttpTraceEndpoint.class)).hasRole("ADMIN");
 		});
 		//http basic and form login are configured for all matchers above. If a different config is needed, then
 		//we need to split it into a distinct spring-security filter

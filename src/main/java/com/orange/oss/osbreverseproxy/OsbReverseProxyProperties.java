@@ -14,12 +14,20 @@ public class OsbReverseProxyProperties {
 	@NotNull
 	private String backendBrokerUri;
 
+	private String serviceProviderUser;
+	private String serviceProviderPassword;
+
 	public String getBackendBrokerUri() {
 		return backendBrokerUri;
 	}
-
 	public void setBackendBrokerUri(String backendBrokerUri) {
 		this.backendBrokerUri = backendBrokerUri;
 	}
+
+	public String getServiceProviderUser() { return serviceProviderUser; }
+	public void setServiceProviderUser(String serviceProviderUser) { this.serviceProviderUser = serviceProviderUser; }
+
+	public String getServiceProviderPassword() { return serviceProviderPassword; }
+	public void setServiceProviderPassword(String serviceProviderPassword) { this.serviceProviderPassword = serviceProviderPassword; }
 
 }
