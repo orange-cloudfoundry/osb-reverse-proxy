@@ -25,7 +25,10 @@ public class ReverseProxyRouteConfiguration {
 		return builder.routes()
 			.route("osb-api",
 				p -> p
-					.path("/v2/**", "**/v2/**")
+					.host("**" + (osbReverseProxyProperties.getWhiteListedOsbDomain() == null ? "" :
+						"." + osbReverseProxyProperties.getWhiteListedOsbDomain()))
+					.and().path("/v2/**", "**/v2/**")
+
 					.filters(f -> f
 						.modifyResponseBody(String.class, String.class,
 							(webExchange, originalBody) -> {

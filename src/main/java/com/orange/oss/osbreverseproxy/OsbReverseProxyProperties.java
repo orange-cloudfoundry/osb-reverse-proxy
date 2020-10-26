@@ -11,10 +11,26 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class OsbReverseProxyProperties {
 
+	/**
+	 * An optional domain to restrict OSB request routing to (e.g. "internal-controlplane-cf.paas") or null to not
+	 * set up domain restriction
+	 */
+	private String whiteListedOsbDomain = null;
+
+	/**
+	 * Uri of the backend broker uri to which OSB requests are routed to
+	 */
 	@NotNull
 	private String backendBrokerUri;
 
+	/**
+	 * Service provider user granted access to /actuator/httptrace endpoint to access httptraces of last requests for troubleshooting purposes
+	 */
 	private String serviceProviderUser;
+
+	/**
+	 * Service provider user granted access to /actuator/httptrace endpoint to access httptraces of last requests for troubleshooting purposes
+	 */
 	private String serviceProviderPassword;
 
 	public String getBackendBrokerUri() {
@@ -29,5 +45,8 @@ public class OsbReverseProxyProperties {
 
 	public String getServiceProviderPassword() { return serviceProviderPassword; }
 	public void setServiceProviderPassword(String serviceProviderPassword) { this.serviceProviderPassword = serviceProviderPassword; }
+
+	public String getWhiteListedOsbDomain() { return whiteListedOsbDomain; }
+	public void setWhiteListedOsbDomain(String whiteListedOsbDomain) { this.whiteListedOsbDomain = whiteListedOsbDomain; }
 
 }

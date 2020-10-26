@@ -147,8 +147,8 @@ How to provide self service http request log details ?
             * [x] submit issue to springboot to simplify injection of custom behavior. https://github.com/spring-projects/spring-boot/issues/23907
             * [ ] simplify forked springboot actuactor code ?  
             * [x] test replacement of  ReadBodyPredicate with ReplaceRequestBody lambda
-            * [ ] refine security config to restrict actuator httptrace access to service consummer
-               * [ ] add new service consummer login/pwd entries in properties
+            * [x] refine security config to restrict actuator httptrace access to service consummer
+               * [x] add new service consummer login/pwd entries in properties
             * [x] Limit DoS by 
                * [x] trimming saved context to 10kB    
                * [x] removing saved body from exchange
