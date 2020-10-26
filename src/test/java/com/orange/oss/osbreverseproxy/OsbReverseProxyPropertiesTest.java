@@ -20,7 +20,6 @@ class OsbReverseProxyPropertiesTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withInitializer(conditionEvaluationReportLoggingListener)
-		.withConfiguration(AutoConfigurations.of(ReverseProxyRouteConfiguration.class))
 		.withUserConfiguration(LoadPropertiesConfiguration.class)
 		.withPropertyValues(
 			"spring.profiles.active=offline-test" //don't start spring cloud gateway in this unit test focused on OsbReverseProxyProperties
@@ -43,17 +42,20 @@ class OsbReverseProxyPropertiesTest {
 	}
 
 	@Test
-	void loads_brokeruri() {
+	void loads_properties() {
 		this.contextRunner
 			.withPropertyValues(
-				"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix"
+				"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix",
+				"osbreverseproxy.serviceProviderUser=aUser",
+				"osbreverseproxy.serviceProviderPassword=aPassword"
 			)
 			.withPropertyValues(requiredProperties())
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OsbReverseProxyProperties.class);
 				OsbReverseProxyProperties osbReverseProxyProperties = context.getBean(OsbReverseProxyProperties.class);
-				assertThat(osbReverseProxyProperties.getBackendBrokerUri()).isEqualTo(
-					"https://remote_broker:443/prefix");
+				assertThat(osbReverseProxyProperties.getBackendBrokerUri()).isEqualTo("https://remote_broker:443/prefix");
+				assertThat(osbReverseProxyProperties.getServiceProviderUser()).isEqualTo("aUser");
+				assertThat(osbReverseProxyProperties.getServiceProviderPassword()).isEqualTo("aPassword");
 			});
 	}
 
