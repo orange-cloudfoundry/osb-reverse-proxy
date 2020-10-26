@@ -51,7 +51,8 @@ class ExtendedServerWebExchangeTraceableRequest implements TraceableRequest {
 		ServerHttpRequest request = exchange.getRequest();
 		this.method = request.getMethodValue();
 		this.headers = new HashMap(request.getHeaders());
-		Object cachedRequestBodyObject = exchange.getAttribute("cachedRequestBodyObject");
+		//Remove the cached body to ease garbage collection in case of large response bodies
+		Object cachedRequestBodyObject = exchange.getAttributes().remove("cachedRequestBodyObject");
 		if (cachedRequestBodyObject != null) {
 			this.headers.put("request_body", singletonList(cachedRequestBodyObject.toString()));
 		}

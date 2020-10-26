@@ -34,6 +34,7 @@ import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.server.WebSession;
 
 //Forked from https://github.com/spring-projects/spring-boot/blob/7df18d9a91f1cee8f0f5a4e0a17d56c85ca75835/spring-boot-project/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/web/trace/reactive/HttpTraceWebFilter.java
+//Waiting for better alternative from https://github.com/spring-projects/spring-boot/issues/23907
 //
 //Overriden to instanciate ExtendedServerWebExchangeTraceableRequest and
 //ExtendedTraceableServerHttpResponse
