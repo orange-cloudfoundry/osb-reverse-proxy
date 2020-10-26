@@ -1,5 +1,8 @@
 package com.orange.oss.osbreverseproxy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import reactor.util.Logger;
 import reactor.util.Loggers;
 
@@ -50,17 +53,27 @@ public class SecurityConfig {
 
 	@Bean
 	public MapReactiveUserDetailsService userDetailsService(OsbReverseProxyProperties osbReverseProxyProperties) {
+		List<UserDetails> users = new ArrayList<>();
+		//noinspection deprecation
 		UserDetails osbClientUser = User.withDefaultPasswordEncoder()
 			.username(osbUser)
 			.password(osbPassword)
 			.roles("ADMIN")
 			.build();
-		UserDetails osbProviderUser = User.withDefaultPasswordEncoder()
-			.username(osbReverseProxyProperties.getServiceProviderUser())
-			.password(osbReverseProxyProperties.getServiceProviderPassword())
-			.roles("HTTPTRACE_ONLY")
-			.build();
-		return new MapReactiveUserDetailsService(osbClientUser, osbProviderUser);
+		users.add(osbClientUser);
+
+		String serviceProviderUser = osbReverseProxyProperties.getServiceProviderUser();
+		String serviceProviderPassword = osbReverseProxyProperties.getServiceProviderPassword();
+		if (serviceProviderUser != null && serviceProviderPassword != null) {
+			//noinspection deprecation
+			UserDetails osbProviderUser = User.withDefaultPasswordEncoder()
+				.username(serviceProviderUser)
+				.password(serviceProviderPassword)
+				.roles("HTTPTRACE_ONLY")
+				.build();
+			users.add(osbProviderUser);
+		}
+		return new MapReactiveUserDetailsService(users);
 	}
 
 	//Default spring-boot-actuator config authenticates any actuator endpoint except info and health endpoints
@@ -123,12 +136,10 @@ public class SecurityConfig {
 	 */
 	@Bean
 	public SecurityWebFilterChain actuatorSpringSecurityFilterChain(ServerHttpSecurity http) {
-		http.authorizeExchange((exchanges) -> {
-			exchanges
-				.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
-				.matchers(EndpointRequest.to(HttpTraceEndpoint.class)).hasAnyRole("ADMIN", "HTTPTRACE_ONLY")
-				.matchers(EndpointRequest.toAnyEndpoint().excluding(HealthEndpoint.class, HttpTraceEndpoint.class)).hasRole("ADMIN");
-		});
+		http.authorizeExchange((exchanges) -> exchanges
+			.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
+			.matchers(EndpointRequest.to(HttpTraceEndpoint.class)).hasAnyRole("ADMIN", "HTTPTRACE_ONLY")
+			.matchers(EndpointRequest.toAnyEndpoint().excluding(HealthEndpoint.class, HttpTraceEndpoint.class)).hasRole("ADMIN"));
 		//http basic and form login are configured for all matchers above. If a different config is needed, then
 		//we need to split it into a distinct spring-security filter
 		http.httpBasic(Customizer.withDefaults());
