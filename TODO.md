@@ -150,7 +150,7 @@ How to provide self service http request log details ?
             * [ ] refine security config to restrict actuator httptrace access to service consummer
                * [ ] add new service consummer login/pwd entries in properties
             * [ ] Limit DoS by 
-               * [ ] trimming saved context to 10kB    
+               * [x] trimming saved context to 10kB    
                * [ ] removing saved body from exchange    
             
             
