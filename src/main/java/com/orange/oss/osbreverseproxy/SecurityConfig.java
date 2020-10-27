@@ -1,13 +1,17 @@
 package com.orange.oss.osbreverseproxy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import reactor.util.Logger;
 import reactor.util.Loggers;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.info.InfoEndpoint;
+import org.springframework.boot.actuate.trace.http.HttpTraceEndpoint;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,6 +35,7 @@ import org.springframework.security.web.server.util.matcher.PathPatternParserSer
  */
 @Configuration
 @EnableWebFluxSecurity
+@EnableConfigurationProperties(OsbReverseProxyProperties.class)
 //@Order(SecurityProperties.BASIC_AUTH_ORDER - 11)
 public class SecurityConfig {
 
@@ -47,13 +52,28 @@ public class SecurityConfig {
 	private String osbPassword;
 
 	@Bean
-	public MapReactiveUserDetailsService userDetailsService() {
-		UserDetails user = User.withDefaultPasswordEncoder()
+	public MapReactiveUserDetailsService userDetailsService(OsbReverseProxyProperties osbReverseProxyProperties) {
+		List<UserDetails> users = new ArrayList<>();
+		//noinspection deprecation
+		UserDetails osbClientUser = User.withDefaultPasswordEncoder()
 			.username(osbUser)
 			.password(osbPassword)
-			.roles("USER")
+			.roles("ADMIN")
 			.build();
-		return new MapReactiveUserDetailsService(user);
+		users.add(osbClientUser);
+
+		String serviceProviderUser = osbReverseProxyProperties.getServiceProviderUser();
+		String serviceProviderPassword = osbReverseProxyProperties.getServiceProviderPassword();
+		if (serviceProviderUser != null && serviceProviderPassword != null) {
+			//noinspection deprecation
+			UserDetails osbProviderUser = User.withDefaultPasswordEncoder()
+				.username(serviceProviderUser)
+				.password(serviceProviderPassword)
+				.roles("HTTPTRACE_ONLY")
+				.build();
+			users.add(osbProviderUser);
+		}
+		return new MapReactiveUserDetailsService(users);
 	}
 
 	//Default spring-boot-actuator config authenticates any actuator endpoint except info and health endpoints
@@ -76,6 +96,10 @@ public class SecurityConfig {
 	//		- found ReactiveWebApplicationContext (OnWebApplicationCondition)
 
 
+	/**
+	 * Osb API is authenticated by backing service using its own credentials, but not by osb-reverse proxy, otherwise
+	 * this results in two conflicting auth requirement always leading to refused OSB api requests.
+	 */
 	@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
 	@Bean
 	public SecurityWebFilterChain osbUnRestrictedSpringSecurityFilterChain(ServerHttpSecurity http) {
@@ -102,13 +126,20 @@ public class SecurityConfig {
 	}
 
 
+	/**
+	 * Actuator endpoints is a mix of:
+	 * <ol>
+	 *   <li/> health does not require auth
+	 *   <li/> httptrace can be invoked by service consummer or admin
+	 *   <li/> other endpoints can only be invoked by admin
+	 * </ol>
+	 */
 	@Bean
-	public SecurityWebFilterChain actuatorSpringSecurityFilterChain(ServerHttpSecurity http) throws Exception {
-		http.authorizeExchange((exchanges) -> {
-			exchanges
-				.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
-				.matchers(EndpointRequest.toAnyEndpoint().excluding(HealthEndpoint.class)).authenticated();
-		});
+	public SecurityWebFilterChain actuatorSpringSecurityFilterChain(ServerHttpSecurity http) {
+		http.authorizeExchange((exchanges) -> exchanges
+			.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
+			.matchers(EndpointRequest.to(HttpTraceEndpoint.class)).hasAnyRole("ADMIN", "HTTPTRACE_ONLY")
+			.matchers(EndpointRequest.toAnyEndpoint().excluding(HealthEndpoint.class, HttpTraceEndpoint.class)).hasRole("ADMIN"));
 		//http basic and form login are configured for all matchers above. If a different config is needed, then
 		//we need to split it into a distinct spring-security filter
 		http.httpBasic(Customizer.withDefaults());

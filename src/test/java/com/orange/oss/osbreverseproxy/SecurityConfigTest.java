@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 
 import org.bouncycastle.util.Arrays;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,22 +34,36 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) // real web service is needed
 @TestPropertySource(properties = {
-	"osbreverseproxy.http_proxy.host=localhost",
-	"osbreverseproxy.http_proxy.port=3128",
-	"spring.security.user.name=" + SecurityConfigTest.USER,
-	"spring.security.user.password=" + SecurityConfigTest.PASSWORD
+	"spring.security.user.name=" + SecurityConfigTest.ADMIN_USER,
+	"spring.security.user.password=" + SecurityConfigTest.ADMIN_PASSWORD,
+
+	"osbreverseproxy.backendBrokerUri=https://remote_broker:443/prefix",
+	"osbreverseproxy.serviceProviderUser=" + SecurityConfigTest.SERVICE_PROVIDER_USER,
+	"osbreverseproxy.serviceProviderPassword=" + SecurityConfigTest.SERVICE_PROVIDER_PASSWORD,
+
+	//don't start spring cloud gateway in this unit test focused on spring security
+	"spring.profiles.active=offline-test"
 })
 public class SecurityConfigTest {
 
-	public static final String USER = "unit-test-user";
-
-	public static final String PASSWORD = "unit-test-password";
+	public static final String ADMIN_PASSWORD = "admin-osb-password";
+	public static final String ADMIN_USER = "admin-osb-user";
+	public static final String SERVICE_PROVIDER_PASSWORD = "service-provider-password";
+	public static final String SERVICE_PROVIDER_USER = "service-provider-user";
 
 	public static final String[] SENSITIVE_ACTUATOR_ENDPOINTS = {
 		"info",
 //			"gateway", //404
 //			"conditions",
-//			"httptrace", // fails with 500 error
+		"httptrace",
+		"loggers",
+		"metrics",
+//			"threaddump"
+	};
+	public static final String[] SENSITIVE_ACTUATOR_ENDPOINTS_REFUSED_TO_SERVICE_CONSUMMERS = {
+		"info",
+//			"gateway", //404
+//			"conditions",
 		"loggers",
 		"metrics",
 //			"threaddump"
@@ -94,17 +107,39 @@ public class SecurityConfigTest {
 	}
 
 	@Test
-	public void basicAuthAuthenticated_to_ActuactorEndpoints_shouldSucceedWith200() {
+	public void adminAuthenticated_to_ActuactorEndpoints_shouldSucceedWith200() {
 		//Note: did not find proper basic auth support in WebTestClient
 		//Workaround with header inspired from https://github.com/spring-projects/spring-security-reactive/blob/37749a64f782c2b2f81afb3db1b30cea3e956839/sample/src/test/java/sample/SecurityTests.java#L118
 		for (String endpoint : ALL_EXPOSED_ACTUATOR_ENDPOINTS) {
 			webClient
 				.get()
 				.uri("/actuator/" + endpoint)
-				.header("Authorization", "Basic " + base64Encode(USER + ":" + PASSWORD))
+				.header("Authorization", "Basic " + base64Encode(ADMIN_USER + ":" + ADMIN_PASSWORD))
 				.header("Content-Type", MediaType.APPLICATION_JSON.toString())
 				.exchange()
 				.expectStatus().isOk();
+		}
+	}
+
+	@Test
+	public void serviceProvider_Authenticated_to_HttpTrace_ActuactorEndpoint_shouldSucceedWith200() {
+		//Note: did not find proper basic auth support in WebTestClient
+		//Workaround with header inspired from https://github.com/spring-projects/spring-security-reactive/blob/37749a64f782c2b2f81afb3db1b30cea3e956839/sample/src/test/java/sample/SecurityTests.java#L118
+		webClient
+			.get()
+			.uri("/actuator/httptrace")
+			.header("Authorization", "Basic " + base64Encode(SERVICE_PROVIDER_USER + ":" + SERVICE_PROVIDER_PASSWORD))
+			.header("Content-Type", MediaType.APPLICATION_JSON.toString())
+			.exchange()
+			.expectStatus().isOk();
+		for (String endpoint : SENSITIVE_ACTUATOR_ENDPOINTS_REFUSED_TO_SERVICE_CONSUMMERS) {
+			webClient
+				.get()
+				.uri("/actuator/" + endpoint)
+				.header("Authorization", "Basic " + base64Encode(SERVICE_PROVIDER_USER + ":" + SERVICE_PROVIDER_PASSWORD))
+				.header("Content-Type", MediaType.APPLICATION_JSON.toString())
+				.exchange()
+				.expectStatus().isForbidden();
 		}
 	}
 
