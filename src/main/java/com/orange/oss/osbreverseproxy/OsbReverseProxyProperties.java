@@ -13,7 +13,7 @@ public class OsbReverseProxyProperties {
 
 	/**
 	 * An optional domain to restrict OSB request routing to (e.g. "internal-controlplane-cf.paas") or null to not
-	 * set up domain restriction
+	 * set up domain restriction for OSB api traffic routed.
 	 */
 	private String whiteListedOsbDomain = null;
 
@@ -33,6 +33,12 @@ public class OsbReverseProxyProperties {
 	 */
 	private String serviceProviderPassword;
 
+	/**
+	 * Max number of bytes to keep in http trace captured request and response bodies. Default to 10,000 bytes
+	 */
+	private int abbreviateHttpTraceLargerThanBytes = 10000;
+
+
 	public String getBackendBrokerUri() {
 		return backendBrokerUri;
 	}
@@ -48,5 +54,13 @@ public class OsbReverseProxyProperties {
 
 	public String getWhiteListedOsbDomain() { return whiteListedOsbDomain; }
 	public void setWhiteListedOsbDomain(String whiteListedOsbDomain) { this.whiteListedOsbDomain = whiteListedOsbDomain; }
+
+	public int getAbbreviateHttpTraceLargerThanBytes() {
+		return abbreviateHttpTraceLargerThanBytes;
+	}
+
+	public void setAbbreviateHttpTraceLargerThanBytes(int abbreviateHttpTraceLargerThanBytes) {
+		this.abbreviateHttpTraceLargerThanBytes = abbreviateHttpTraceLargerThanBytes;
+	}
 
 }

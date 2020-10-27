@@ -21,7 +21,7 @@ public class ReverseProxyRouteConfiguration {
 
 	@Bean
 	public RouteLocator osbApiRoute(RouteLocatorBuilder builder,
-		OsbReverseProxyProperties osbReverseProxyProperties) {
+		final OsbReverseProxyProperties osbReverseProxyProperties) {
 		return builder.routes()
 			.route("osb-api",
 				p -> p
@@ -34,7 +34,8 @@ public class ReverseProxyRouteConfiguration {
 							(webExchange, originalBody) -> {
 								if (originalBody != null) {
 									//See https://stackoverflow.com/a/19975149/1484823 for abbreviation
-									String abbreviatedBody = StringUtils.abbreviate(originalBody, 10000);
+									String abbreviatedBody = StringUtils.abbreviate(originalBody,
+										osbReverseProxyProperties.getAbbreviateHttpTraceLargerThanBytes());
 									webExchange.getAttributes().put("cachedResponseBodyObject", abbreviatedBody);
 									return Mono.just(originalBody);
 								} else {
@@ -45,7 +46,8 @@ public class ReverseProxyRouteConfiguration {
 							(webExchange, originalBody) -> {
 								if (originalBody != null) {
 									//See https://stackoverflow.com/a/19975149/1484823 for abbreviation
-									String abbreviatedBody = StringUtils.abbreviate(originalBody, 10000);
+									String abbreviatedBody = StringUtils.abbreviate(originalBody,
+										osbReverseProxyProperties.getAbbreviateHttpTraceLargerThanBytes());
 									webExchange.getAttributes().put("cachedRequestBodyObject", abbreviatedBody);
 									return Mono.just(originalBody);
 								} else {
