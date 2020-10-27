@@ -161,7 +161,14 @@ How to provide self service http request log details ?
                   * good for testing custom gateway routes designed to comply to httpbin endpoints. 
                   * Not suited for testing OSB v2 endpoints, which would require an echo service or a wiremock
                      * No traces of wiremock in spring-cloud-gateway source code
-                     * Transiently paused this test effort for now      
+                     * Transiently paused this test effort for now
+                     
+            * [ ] PR doc spring security
+            * [ ] manual end 2 end test
+            * [ ] refine smoke tests assertions ?
+                * httptrace contain request/response body     
+                * httptrace rejected on app domain     
+                * v2/catalog rejected without auth     
             
             
             

@@ -97,11 +97,12 @@ public class SecurityConfig {
 
 
 	/**
-	 * Osb API requires basic auth with ADMIN role
+	 * Osb API is authenticated by backing service using its own credentials, but not by osb-reverse proxy, otherwise
+	 * this results in two conflicting auth requirement always leading to refused OSB api requests.
 	 */
 	@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
 	@Bean
-	public SecurityWebFilterChain osbSpringSecurityFilterChain(ServerHttpSecurity http) {
+	public SecurityWebFilterChain osbUnRestrictedSpringSecurityFilterChain(ServerHttpSecurity http) {
 		http
 			// See https://docs.spring.io/spring-security/site/docs/5.3.0.RELEASE/reference/html5/#csrf-when
 			//   Our recommendation is to use CSRF protection for any request that could be processed by a browser
@@ -120,7 +121,7 @@ public class SecurityConfig {
 			//Scope this filter only to /v2 requests, otherwise this will handle other filters as well
 			//see background at https://spring.io/guides/topicals/spring-security-architecture#_creating_and_customizing_filter_chains
 			.authorizeExchange()
-				.anyExchange().hasRole("ADMIN");
+				.anyExchange().permitAll();
 		return http.build();
 	}
 
