@@ -1,54 +1,6 @@
 spring:
   application:
     name: "osb-reverse-proxy-template" # required for opentracing. should be overriden in symlinked copies
-  cloud:
-    gateway:
-
-      # https://cloud.spring.io/spring-cloud-gateway/reference/html/#troubleshooting
-      httpserver:
-        wiretap: true
-
-      httpclient:
-        wiretap: true
-
-      # https://cloud.spring.io/spring-cloud-gateway/reference/html/#tls-and-ssl
-      # ignore shield TLS cert for now
-        ssl:
-          useInsecureTrustManager: true
-
-# https://cloud.spring.io/spring-cloud-gateway/reference/html/#tls-and-ssl
-#server:
-#  ssl:
-#    enabled: true
-#    key-alias: scg
-#    key-store-password: scg1234
-#    key-store: classpath:scg-keystore.p12
-#    key-store-type: PKCS12
-
-
-logging:
-  level:
-    reactor:
-      netty: debug
-    org:
-      springframework:
-        cloud:
-          gateway: debug
-
-        web:
-          reactive: trace
-        security: debug
-
-        http:
-          server:
-            reactive: debug
-
-
-        boot:
-          autoconfigure:
-            web: debug
-          actuate: debug
-
 
 # turn on actuator endpoints protected by basic auth
 # including spring cloud gateway specific endpoint, see https://cloud.spring.io/spring-cloud-gateway/reference/html/#actuator-api
