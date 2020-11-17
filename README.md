@@ -145,6 +145,38 @@ $ curl -u redacted-user:redacted-password https://osb-reverse-proxy.redacted-dom
 ]
 ```
 
+See sample jq query syntax below:
+
+```
+                    # filter PUT request                      # filter service binding uris 
+jq -r '.traces[] | select (.request.method=="PUT") | select ( .request.uri|test(".binding"))'
+                    # filter PUT request                      # filter status
+jq -r '.traces[] | select (.request.method=="PUT" and .response.status!=200)'
+
+```
+
+Warning: the following two issues may require to query the httptrace endpoint multiple times:
+   * [#9 httptraces may be shared by osb-reverse-proxy instances](https://github.com/orange-cloudfoundry/osb-reverse-proxy/issues/9)
+   * [#8 http traces may be lost following osb-reverse-proxy restart](https://github.com/orange-cloudfoundry/osb-reverse-proxy/issues/8)
+
+Potential workaround by storing httptrace output in a local file and use jq to
+* merge files into a single array
+* remove duplicates (using [unique](https://gist.github.com/olih/f7437fb6962fb3ee9fe95bda8d2c8fa4))
+
+Workaround:
+
+```bash
+#repeat in a loop
+curl [...] > trace-`date +%Y-%m-%d.%H:%M:%S`.json
+# remove duplicates and filter
+jq -s . trace*.json | jq 'unique' 
+```
+
+Random Jq references:
+   * https://stedolan.github.io/jq/manual/ jq manual
+   * https://www.baeldung.com/linux/jq-command-json
+   * https://gist.github.com/olih/f7437fb6962fb3ee9fe95bda8d2c8fa4 jq-cheetsheet.md
+
 ## Deploying 
 
 This reverse proxy is a java springboot app which can be deployed onto cloufoundry using the java buildpack.
