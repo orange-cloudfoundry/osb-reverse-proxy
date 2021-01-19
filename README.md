@@ -17,7 +17,15 @@ The following ascii art diagram illustrates the network path when a developer re
 developer -> Cloud Foundry cloud controller -> osb-reverse-proxy -> http proxy -> service broker  
 ```
 
-## Osb api logs
+## Configuration
+
+The broker is configureable through usual spring-boot configuration style. The [OsbReverseProxyProperties.java](https://github.com/orange-cloudfoundry/osb-reverse-proxy/blob/master/src/main/java/com/orange/oss/osbreverseproxy/OsbReverseProxyProperties.java) document the supported properties.
+
+## Operations 
+
+Osb-reverse-proxy is designed to support multiple hostnames. The property (`whiteListedOsbDomain`) controls which hostnames are whitelisted to accept OSB API calls. The host may be used to expose operation endpoints, including spring-boot actuator endpoints
+
+### Osb api logs
 
 Osb-reverse proxy collects and serves logs of OSB API requests using an extension of springboot actuator httptrace support with request and response body added as http headers
 
