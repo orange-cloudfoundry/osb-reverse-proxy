@@ -179,6 +179,19 @@ curl [...] > trace-`date +%Y-%m-%d.%H:%M:%S`.json
 # remove duplicates and filter
 jq -s . trace*.json | jq 'unique' 
 ```
+ which results in paas-templates context to
+ 
+ ```bash
+ # on bosh-cli
+log-credhub
+# repeat multiple times to reach both osb-reverse-proxy instances
+curl -u serviceProvider:$(credhub-get /ops-depls/cf-apps-deployments/osb-reverse-proxy-4/service-provider-password) https://osb-reverse-proxy-4.internal-controlplane-cf.paas/actuator/httptrace | jq . > trace-`date +%Y-%m-%d.%H:%M:%S`.json
+
+jq -s . trace*.json | jq -r 'unique' | jq -r '.[].traces[] | select (.request.method=="PUT")' | less
+# clean up traces
+rm trace*.json
+```
+
 
 Random Jq references:
    * https://stedolan.github.io/jq/manual/ jq manual
