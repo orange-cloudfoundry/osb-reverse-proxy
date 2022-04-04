@@ -21,7 +21,7 @@ repositories {
 
 //See https://spring.io/projects/spring-cloud#adding-spring-cloud-to-an-existing-spring-boot-application
 ext {
-    set('springCloudVersion', "Hoxton.SR8")
+    set('springCloudVersion', "2021.0.1")
 }
 
 dependencies {
@@ -46,12 +46,6 @@ dependencyManagement {
     }
 
 }
-
-// Force earlier milestone release to get securing logging preview
-// https://docs.spring.io/spring-security/site/docs/current/reference/html5/#getting-gradle-boot
-// https://github.com/spring-projects/spring-security/pull/8504
-// https://github.com/spring-projects/spring-security/releases/tag/5.4.0-M2
-ext['spring-security.version']='5.4.0-RC1'
 
 test {
     // enable JUnit 5
