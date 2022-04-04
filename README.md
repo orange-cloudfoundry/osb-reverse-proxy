@@ -25,6 +25,21 @@ The broker is configureable through usual spring-boot configuration style. The [
 
 Osb-reverse-proxy is designed to support multiple hostnames. The property (`whiteListedOsbDomain`) controls which hostnames are whitelisted to accept OSB API calls. The host may be used to expose operation endpoints, including spring-boot actuator endpoints
 
+
+### Actuator endpoints
+
+Osb-reverse-proxy embeds spring boot actuator endpoints ("beans,conditions,info,gateway,health,httptrace,loggers,metrics,threaddump") protected by a user configured by the `spring.security.user.name` and `spring.security.user.password` environment variables. See [SecurityConfigTest.java](src/test/java/com/orange/oss/osbreverseproxy/SecurityConfigTest.java) and [application.yml](src/main/resources/application.yml) for full details.
+
+This enables dynamic log level assignment through
+
+```bash
+curl -vvv -X POST -u redacted-user:redacted-password https://osb-reverse-proxy.mydomain.org/actuator/loggers/logging.level.org.springframework.cloud.gateway.debug -X POST -H 'Content-Type: application/json' -d '{"configuredLevel": "trace"}'
+```
+
+Sample relevant loggers are also available in the `verbose` osb-reverse-proxy spring profile. This may be set by setting the `SPRING_PROFILES_ACTIVE` env var to `verbose`.
+
+
+
 ### Osb api logs
 
 Osb-reverse proxy collects and serves logs of OSB API requests using an extension of springboot actuator httptrace support with request and response body added as http headers
