@@ -225,9 +225,9 @@ Multi-tenancy support with osb-specific configuration is planned. See [TODO](TOD
 
 ## Releasing
 
-* manually edit the version in `gradle.properties` (e.g `version=0.1.0`), commit & push
-* git tag v0.1.0 -a -m "0.1.0 release"
-* git push origin  v0.1.0
+* manually edit the version in `build.gradle` (e.g `version=0.2.0`), commit & push
+* git tag v0.2.0 -a -m "0.2.0 release"
+* git push origin  v0.2.0
 * let circle ci build and upload the binaries to github
 * edit the github release to complete release notes
 * manually edit the version in `gradle.properties`, commit & push e.g. `version=0.2.0.BUILD-SNAPSHOT`
