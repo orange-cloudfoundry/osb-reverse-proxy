@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'org.springframework.boot' version '2.6.5'
     // See https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-git-info
     id 'com.gorylenko.gradle-git-properties' version '2.2.2'
 }
@@ -21,14 +21,14 @@ repositories {
 
 //See https://spring.io/projects/spring-cloud#adding-spring-cloud-to-an-existing-spring-boot-application
 ext {
-    set('springCloudVersion', "Hoxton.SR8")
+    set('springCloudVersion', "2021.0.1")
 }
 
 dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
 
     compile "org.springframework.boot:spring-boot-starter-security"
 //    compile "org.springframework.cloud:spring-cloud-starter-sleuth"
@@ -46,12 +46,6 @@ dependencyManagement {
     }
 
 }
-
-// Force earlier milestone release to get securing logging preview
-// https://docs.spring.io/spring-security/site/docs/current/reference/html5/#getting-gradle-boot
-// https://github.com/spring-projects/spring-security/pull/8504
-// https://github.com/spring-projects/spring-security/releases/tag/5.4.0-M2
-ext['spring-security.version']='5.4.0-RC1'
 
 test {
     // enable JUnit 5
