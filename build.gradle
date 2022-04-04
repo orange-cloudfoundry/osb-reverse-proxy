@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.6.6'
     // See https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-git-info
-    id 'com.gorylenko.gradle-git-properties' version '2.2.2'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.0'
 }
 
 //See https://docs.spring.io/spring-boot/docs/2.3.4.RELEASE/gradle-plugin/reference/html/
